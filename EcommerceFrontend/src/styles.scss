@@ -1,0 +1,72 @@
+/* You can add global styles to this file, and also import other style files */
+
+// Estilos globais para melhorar a aparência
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// Garantir que os ícones do Material Design apareçam
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+// Estilos do layout principal
+.sidenav-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 250px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.content {
+  padding: 20px;
+}
+
+.active {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+// Estilos da tabela
+.mat-mdc-table {
+  width: 100%;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .sidenav {
+    width: 200px;
+  }
+
+  .content {
+    padding: 10px;
+  }
+}
