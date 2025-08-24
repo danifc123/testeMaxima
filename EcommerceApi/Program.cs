@@ -1,9 +1,20 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Adiciona os controllers
-builder.Services.AddControllers();          // <- ESSENCIAL
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Adiciona CORS para permitir requisições do frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -16,9 +27,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Usa CORS
+app.UseCors("AllowAll");
+
 app.UseAuthorization();
 
 // Mapeia os controllers
-app.MapControllers();                       // <- ESSENCIAL
+app.MapControllers();
 
 app.Run();
