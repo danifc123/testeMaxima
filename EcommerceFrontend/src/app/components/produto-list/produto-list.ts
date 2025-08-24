@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,13 +6,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { ProdutoService } from '../../services/produto';
 import { Produto } from '../../models/produto';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
+import { filter, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-produto-list',
@@ -25,39 +25,65 @@ import { Inject } from '@angular/core';
     MatSnackBarModule,
     MatDialogModule,
     MatChipsModule,
-    MatProgressSpinnerModule,
     MatTooltipModule
   ],
   templateUrl: './produto-list.html',
   styleUrl: './produto-list.scss'
 })
-export class ProdutoListComponent implements OnInit {
+export class ProdutoListComponent implements OnInit, OnDestroy {
   produtos: Produto[] = [];
   displayedColumns: string[] = ['codigo', 'descricao', 'departamento', 'preco', 'status', 'acoes'];
   loading = false;
+  private routerSubscription: Subscription | undefined;
 
   constructor(
     private produtoService: ProdutoService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.carregarProdutos();
+
+    // Escutar mudanças de rota para recarregar produtos quando voltar do formulário
+    this.routerSubscription = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.carregarProdutos();
+    });
   }
 
-  carregarProdutos(): void {
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+
+    carregarProdutos(): void {
     this.loading = true;
+    this.cdr.detectChanges(); // Força detecção de mudanças
+
+    // Timeout de segurança para evitar loading infinito
+    const timeout = setTimeout(() => {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }, 10000); // 10 segundos
+
     this.produtoService.getProdutos().subscribe({
       next: (data) => {
+        clearTimeout(timeout);
         this.produtos = data;
         this.loading = false;
+        this.cdr.detectChanges(); // Força detecção de mudanças
       },
       error: (error) => {
+        clearTimeout(timeout);
         console.error('Erro ao carregar produtos:', error);
         this.snackBar.open('Erro ao carregar produtos', 'Fechar', { duration: 3000 });
         this.loading = false;
+        this.cdr.detectChanges(); // Força detecção de mudanças
       }
     });
   }

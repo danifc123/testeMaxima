@@ -31,6 +31,7 @@ body {
 
 .sidenav {
   width: 250px;
+  transition: transform 0.3s ease;
 }
 
 .sidenav .mat-toolbar {
@@ -41,6 +42,16 @@ body {
   position: sticky;
   top: 0;
   z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.menu-button {
+  margin-right: 16px;
+}
+
+.toolbar-title {
+  flex: 1;
 }
 
 .content {
@@ -68,5 +79,13 @@ body {
 
   .content {
     padding: 10px;
+  }
+
+  .toolbar-title {
+    font-size: 18px;
+  }
+
+  .menu-button {
+    margin-right: 8px;
   }
 }

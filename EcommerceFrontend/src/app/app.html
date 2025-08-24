@@ -1,11 +1,11 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #drawer class="sidenav" fixedInViewport
       [attr.role]="'navigation'"
-      [mode]="'side'"
-      [opened]="true">
+      [mode]="'over'"
+      [opened]="false">
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/produtos" routerLinkActive="active">
+      <a mat-list-item routerLink="/produtos" routerLinkActive="active" (click)="drawer.close()">
         <mat-icon matListItemIcon>inventory</mat-icon>
         <span matListItemTitle>Produtos</span>
       </a>
@@ -13,7 +13,10 @@
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary">
-      <span>{{ title }}</span>
+      <button mat-icon-button (click)="drawer.toggle()" class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="toolbar-title">{{ title }}</span>
     </mat-toolbar>
     <div class="content">
       <router-outlet></router-outlet>

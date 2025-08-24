@@ -114,7 +114,7 @@ export class ProdutoFormComponent implements OnInit {
         this.produtoService.updateProduto(this.produtoId, produtoData).subscribe({
           next: () => {
             this.snackBar.open('Produto atualizado com sucesso', 'Fechar', { duration: 3000 });
-            this.router.navigate(['/produtos']);
+            this.router.navigate(['/produtos'], { replaceUrl: true });
           },
           error: (error) => {
             console.error('Erro ao atualizar produto:', error);
@@ -126,7 +126,7 @@ export class ProdutoFormComponent implements OnInit {
         this.produtoService.createProduto(produtoData).subscribe({
           next: () => {
             this.snackBar.open('Produto criado com sucesso', 'Fechar', { duration: 3000 });
-            this.router.navigate(['/produtos']);
+            this.router.navigate(['/produtos'], { replaceUrl: true });
           },
           error: (error) => {
             console.error('Erro ao criar produto:', error);
@@ -150,7 +150,8 @@ export class ProdutoFormComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/produtos']);
+    // Usar replace para evitar problemas de navegação
+    this.router.navigate(['/produtos'], { replaceUrl: true });
   }
 
   getErrorMessage(controlName: string): string {
