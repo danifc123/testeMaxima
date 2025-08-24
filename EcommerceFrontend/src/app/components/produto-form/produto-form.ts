@@ -14,6 +14,9 @@ import { ProdutoService } from '../../services/produto';
 import { DepartamentoService } from '../../services/departamento';
 import { Produto, ProdutoDto } from '../../models/produto';
 import { Departamento } from '../../models/departamento';
+import { APP_CONSTANTS } from '../../constants/app.constants';
+import { Validators as CustomValidators } from '../../utils/validators';
+import { LoadingState } from '../../models/api-response';
 
 @Component({
   selector: 'app-produto-form',
@@ -34,11 +37,20 @@ import { Departamento } from '../../models/departamento';
   styleUrl: './produto-form.scss'
 })
 export class ProdutoFormComponent implements OnInit {
-  produtoForm: FormGroup;
+  produtoForm!: FormGroup;
   departamentos: Departamento[] = [];
   isEditMode = false;
   produtoId: string | null = null;
-  loading = false;
+  loadingState: LoadingState = 'idle';
+
+  // Getters para melhor legibilidade
+  get isLoading(): boolean {
+    return this.loadingState === 'loading';
+  }
+
+  get isEditando(): boolean {
+    return this.isEditMode;
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -48,11 +60,15 @@ export class ProdutoFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
+    this.inicializarFormulario();
+  }
+
+  private inicializarFormulario(): void {
     this.produtoForm = this.fb.group({
-      codigo: ['', [Validators.required, Validators.maxLength(50)]],
-      descricao: ['', [Validators.required, Validators.maxLength(255)]],
+      codigo: ['', [Validators.required, Validators.maxLength(APP_CONSTANTS.VALIDATION.CODIGO_MAX_LENGTH)]],
+      descricao: ['', [Validators.required, Validators.maxLength(APP_CONSTANTS.VALIDATION.DESCRICAO_MAX_LENGTH)]],
       departamentoCodigo: ['', Validators.required],
-      preco: ['', [Validators.required, Validators.min(0.01)]],
+      preco: ['', [Validators.required, Validators.min(APP_CONSTANTS.VALIDATION.PRECO_MIN)]],
       status: [true]
     });
   }
@@ -68,8 +84,7 @@ export class ProdutoFormComponent implements OnInit {
         this.departamentos = data;
       },
       error: (error) => {
-        console.error('Erro ao carregar departamentos:', error);
-        this.snackBar.open('Erro ao carregar departamentos', 'Fechar', { duration: 3000 });
+        this.handleError(APP_CONSTANTS.MESSAGES.PRODUTO.ERRO_DEPARTAMENTOS, error);
       }
     });
   }
@@ -85,86 +100,95 @@ export class ProdutoFormComponent implements OnInit {
   carregarProduto(): void {
     if (!this.produtoId) return;
 
-    this.loading = true;
+    this.setLoadingState('loading');
     this.produtoService.getProduto(this.produtoId).subscribe({
       next: (produto) => {
-        this.produtoForm.patchValue({
-          codigo: produto.codigo,
-          descricao: produto.descricao,
-          departamentoCodigo: produto.departamentoCodigo,
-          preco: produto.preco,
-          status: produto.status
-        });
-        this.loading = false;
+        this.preencherFormulario(produto);
+        this.setLoadingState('success');
       },
       error: (error) => {
-        console.error('Erro ao carregar produto:', error);
-        this.snackBar.open('Erro ao carregar produto', 'Fechar', { duration: 3000 });
-        this.loading = false;
+        this.handleError('Erro ao carregar produto', error);
+        this.setLoadingState('error');
       }
     });
   }
 
+  private preencherFormulario(produto: Produto): void {
+    this.produtoForm.patchValue({
+      codigo: produto.codigo,
+      descricao: produto.descricao,
+      departamentoCodigo: produto.departamentoCodigo,
+      preco: produto.preco,
+      status: produto.status
+    });
+  }
+
+  private setLoadingState(state: LoadingState): void {
+    this.loadingState = state;
+  }
+
+  private handleError(message: string, error: any): void {
+    console.error(message, error);
+    this.snackBar.open(message, 'Fechar', { duration: APP_CONSTANTS.SNACKBAR_DURATION });
+  }
+
   onSubmit(): void {
     if (this.produtoForm.valid) {
-      this.loading = true;
+      this.setLoadingState('loading');
       const produtoData: ProdutoDto = this.produtoForm.value;
 
-      if (this.isEditMode && this.produtoId) {
-        this.produtoService.updateProduto(this.produtoId, produtoData).subscribe({
-          next: () => {
-            this.snackBar.open('Produto atualizado com sucesso', 'Fechar', { duration: 3000 });
-            this.router.navigate(['/produtos'], { replaceUrl: true });
-          },
-          error: (error) => {
-            console.error('Erro ao atualizar produto:', error);
-            this.snackBar.open('Erro ao atualizar produto', 'Fechar', { duration: 3000 });
-            this.loading = false;
-          }
-        });
+      if (this.isEditando && this.produtoId) {
+        this.atualizarProduto(produtoData);
       } else {
-        this.produtoService.createProduto(produtoData).subscribe({
-          next: () => {
-            this.snackBar.open('Produto criado com sucesso', 'Fechar', { duration: 3000 });
-            this.router.navigate(['/produtos'], { replaceUrl: true });
-          },
-          error: (error) => {
-            console.error('Erro ao criar produto:', error);
-            this.snackBar.open('Erro ao criar produto', 'Fechar', { duration: 3000 });
-            this.loading = false;
-          }
-        });
+        this.criarProduto(produtoData);
       }
     } else {
       this.marcarCamposInvalidos();
     }
   }
 
-  marcarCamposInvalidos(): void {
-    Object.keys(this.produtoForm.controls).forEach(key => {
-      const control = this.produtoForm.get(key);
-      if (control?.invalid) {
-        control.markAsTouched();
+  private atualizarProduto(produtoData: ProdutoDto): void {
+    if (!this.produtoId) return;
+
+    this.produtoService.updateProduto(this.produtoId, produtoData).subscribe({
+      next: () => {
+        this.snackBar.open(APP_CONSTANTS.MESSAGES.PRODUTO.ATUALIZADO, 'Fechar', { duration: APP_CONSTANTS.SNACKBAR_DURATION });
+        this.navegarParaListagem();
+      },
+      error: (error) => {
+        this.handleError(APP_CONSTANTS.MESSAGES.PRODUTO.ERRO_ATUALIZAR, error);
+        this.setLoadingState('error');
       }
     });
   }
 
+  private criarProduto(produtoData: ProdutoDto): void {
+    this.produtoService.createProduto(produtoData).subscribe({
+      next: () => {
+        this.snackBar.open(APP_CONSTANTS.MESSAGES.PRODUTO.CRIADO, 'Fechar', { duration: APP_CONSTANTS.SNACKBAR_DURATION });
+        this.navegarParaListagem();
+      },
+      error: (error) => {
+        this.handleError(APP_CONSTANTS.MESSAGES.PRODUTO.ERRO_CRIAR, error);
+        this.setLoadingState('error');
+      }
+    });
+  }
+
+  private navegarParaListagem(): void {
+    this.router.navigate([APP_CONSTANTS.ROUTES.PRODUTOS], { replaceUrl: true });
+  }
+
+  marcarCamposInvalidos(): void {
+    CustomValidators.markInvalidFieldsAsTouched(this.produtoForm);
+  }
+
   cancelar(): void {
-    // Usar replace para evitar problemas de navegação
-    this.router.navigate(['/produtos'], { replaceUrl: true });
+    this.navegarParaListagem();
   }
 
   getErrorMessage(controlName: string): string {
     const control = this.produtoForm.get(controlName);
-    if (control?.hasError('required')) {
-      return 'Este campo é obrigatório';
-    }
-    if (control?.hasError('maxlength')) {
-      return `Máximo de ${control.errors?.['maxlength'].requiredLength} caracteres`;
-    }
-    if (control?.hasError('min')) {
-      return 'Valor deve ser maior que zero';
-    }
-    return '';
+    return CustomValidators.getErrorMessage(control);
   }
 }

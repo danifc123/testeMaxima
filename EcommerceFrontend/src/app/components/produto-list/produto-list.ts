@@ -13,6 +13,9 @@ import { Produto } from '../../models/produto';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
 import { filter, Subscription } from 'rxjs';
+import { APP_CONSTANTS } from '../../constants/app.constants';
+import { Formatters } from '../../utils/formatters';
+import { LoadingState } from '../../models/api-response';
 
 @Component({
   selector: 'app-produto-list',
@@ -32,9 +35,18 @@ import { filter, Subscription } from 'rxjs';
 })
 export class ProdutoListComponent implements OnInit, OnDestroy {
   produtos: Produto[] = [];
-  displayedColumns: string[] = ['codigo', 'descricao', 'departamento', 'preco', 'status', 'acoes'];
-  loading = false;
+  readonly displayedColumns: string[] = ['codigo', 'descricao', 'departamento', 'preco', 'status', 'acoes'];
+  loadingState: LoadingState = 'idle';
   private routerSubscription: Subscription | undefined;
+
+  // Getters para melhor legibilidade
+  get isLoading(): boolean {
+    return this.loadingState === 'loading';
+  }
+
+  get hasProdutos(): boolean {
+    return this.produtos.length > 0;
+  }
 
   constructor(
     private produtoService: ProdutoService,
@@ -61,35 +73,40 @@ export class ProdutoListComponent implements OnInit, OnDestroy {
     }
   }
 
-    carregarProdutos(): void {
-    this.loading = true;
-    this.cdr.detectChanges(); // Força detecção de mudanças
+      carregarProdutos(): void {
+    this.setLoadingState('loading');
 
     // Timeout de segurança para evitar loading infinito
     const timeout = setTimeout(() => {
-      this.loading = false;
-      this.cdr.detectChanges();
-    }, 10000); // 10 segundos
+      this.setLoadingState('error');
+    }, APP_CONSTANTS.LOADING_TIMEOUT);
 
     this.produtoService.getProdutos().subscribe({
       next: (data) => {
         clearTimeout(timeout);
         this.produtos = data;
-        this.loading = false;
-        this.cdr.detectChanges(); // Força detecção de mudanças
+        this.setLoadingState('success');
       },
       error: (error) => {
         clearTimeout(timeout);
-        console.error('Erro ao carregar produtos:', error);
-        this.snackBar.open('Erro ao carregar produtos', 'Fechar', { duration: 3000 });
-        this.loading = false;
-        this.cdr.detectChanges(); // Força detecção de mudanças
+        this.handleError('Erro ao carregar produtos', error);
+        this.setLoadingState('error');
       }
     });
   }
 
+  private setLoadingState(state: LoadingState): void {
+    this.loadingState = state;
+    this.cdr.detectChanges();
+  }
+
+  private handleError(message: string, error: any): void {
+    console.error(message, error);
+    this.snackBar.open(message, 'Fechar', { duration: APP_CONSTANTS.SNACKBAR_DURATION });
+  }
+
   editarProduto(produto: Produto): void {
-    this.router.navigate(['/produtos/editar', produto.id]);
+    this.router.navigate([APP_CONSTANTS.ROUTES.PRODUTO_EDITAR, produto.id]);
   }
 
   excluirProduto(produto: Produto): void {
@@ -100,37 +117,38 @@ export class ProdutoListComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.produtoService.deleteProduto(produto.id).subscribe({
-          next: () => {
-            this.snackBar.open('Produto excluído com sucesso', 'Fechar', { duration: 3000 });
-            this.carregarProdutos();
-          },
-          error: (error) => {
-            console.error('Erro ao excluir produto:', error);
-            this.snackBar.open('Erro ao excluir produto', 'Fechar', { duration: 3000 });
-          }
-        });
+        this.excluirProdutoConfirmado(produto.id);
+      }
+    });
+  }
+
+  private excluirProdutoConfirmado(produtoId: string): void {
+    this.produtoService.deleteProduto(produtoId).subscribe({
+      next: () => {
+        this.snackBar.open(APP_CONSTANTS.MESSAGES.PRODUTO.EXCLUIDO, 'Fechar', { duration: APP_CONSTANTS.SNACKBAR_DURATION });
+        this.carregarProdutos();
+      },
+      error: (error) => {
+        this.handleError(APP_CONSTANTS.MESSAGES.PRODUTO.ERRO_EXCLUIR, error);
       }
     });
   }
 
   novoProduto(): void {
-    this.router.navigate(['/produtos/novo']);
+    this.router.navigate([APP_CONSTANTS.ROUTES.PRODUTO_NOVO]);
   }
 
+  // Métodos de formatação usando utilitários
   formatarPreco(preco: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(preco);
+    return Formatters.formatCurrency(preco);
   }
 
   getStatusClass(status: boolean): string {
-    return status ? 'status-ativo' : 'status-inativo';
+    return Formatters.getStatusClass(status);
   }
 
   getStatusText(status: boolean): string {
-    return status ? 'Ativo' : 'Inativo';
+    return Formatters.getStatusText(status);
   }
 }
 

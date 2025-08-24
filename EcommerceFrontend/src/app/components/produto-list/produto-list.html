@@ -8,20 +8,20 @@
   </div>
 
   <div class="content">
-    <div *ngIf="loading" class="loading">
+    <div *ngIf="isLoading" class="loading">
       <div class="loading-spinner">
         <div class="spinner"></div>
       </div>
       <p>Carregando produtos...</p>
     </div>
 
-    <div *ngIf="!loading && produtos.length === 0" class="empty-state">
+    <div *ngIf="!isLoading && !hasProdutos" class="empty-state">
       <mat-icon>inventory_2</mat-icon>
       <h3>Nenhum produto encontrado</h3>
       <p>Clique em "Novo Produto" para começar a cadastrar produtos.</p>
     </div>
 
-    <div *ngIf="!loading && produtos.length > 0" class="table-container">
+    <div *ngIf="!isLoading && hasProdutos" class="table-container">
       <table mat-table [dataSource]="produtos" class="mat-elevation-z8">
         <!-- Código Column -->
         <ng-container matColumnDef="codigo">

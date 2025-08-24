@@ -2,8 +2,8 @@
   <mat-card>
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
-        {{ isEditMode ? 'Editar Produto' : 'Novo Produto' }}
+        <mat-icon>{{ isEditando ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditando ? 'Editar Produto' : 'Novo Produto' }}
       </mat-card-title>
     </mat-card-header>
 
@@ -70,9 +70,9 @@
             <mat-icon>cancel</mat-icon>
             Cancelar
           </button>
-          <button type="submit" mat-raised-button color="primary" [disabled]="loading || produtoForm.invalid">
-            <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
-            {{ isEditMode ? 'Atualizar' : 'Criar' }}
+          <button type="submit" mat-raised-button color="primary" [disabled]="isLoading || produtoForm.invalid">
+            <mat-icon>{{ isEditando ? 'save' : 'add' }}</mat-icon>
+            {{ isEditando ? 'Atualizar' : 'Criar' }}
           </button>
         </div>
       </form>

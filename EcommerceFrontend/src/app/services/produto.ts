@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Produto, ProdutoDto } from '../models/produto';
+import { APP_CONSTANTS } from '../constants/app.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProdutoService {
-  private apiUrl = 'http://localhost:7001/api/produto';
+  private readonly apiUrl = `${APP_CONSTANTS.API_BASE_URL}/produto`;
 
   constructor(private http: HttpClient) { }
 
