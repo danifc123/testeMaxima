@@ -1,4 +1,4 @@
-namespace EcommerceApi.Dtos
+namespace EcommerceApi.DTOs
 {
     public class DepartamentoDto
     {

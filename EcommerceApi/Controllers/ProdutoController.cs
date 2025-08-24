@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using EcommerceApi.Dtos;
+using EcommerceApi.DTOs;
 using EcommerceApi.Repositories;
+using EcommerceApi.Constants;
+using EcommerceApi.Utils;
 
 namespace EcommerceApi.Controllers
 {
@@ -15,9 +17,7 @@ namespace EcommerceApi.Controllers
             _repo = new ProdutoRepository(config.GetConnectionString("DefaultConnection")!);
         }
 
-        /// <summary>
-        /// Lista todos os produtos ativos
-        /// </summary>
+        // Lista todos os produtos ativos
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -28,13 +28,11 @@ namespace EcommerceApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+                return HandleInternalError(ex);
             }
         }
 
-        /// <summary>
-        /// Busca um produto específico por ID
-        /// </summary>
+        // Busca um produto específico por ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -42,52 +40,43 @@ namespace EcommerceApi.Controllers
             {
                 var produto = await _repo.GetProdutoById(id);
                 if (produto == null)
-                    return NotFound(new { message = "Produto não encontrado" });
+                    return NotFound(new { message = AppConstants.ValidationMessages.ProdutoNaoEncontrado });
 
                 return Ok(produto);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+                return HandleInternalError(ex);
             }
         }
 
-        /// <summary>
-        /// Cria um novo produto
-        /// </summary>
+        // Cria um novo produto
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProdutoDto dto)
         {
             try
             {
-                // Validações
-                if (string.IsNullOrWhiteSpace(dto.Codigo))
-                    return BadRequest(new { message = "Código é obrigatório" });
-
-                if (string.IsNullOrWhiteSpace(dto.Descricao))
-                    return BadRequest(new { message = "Descrição é obrigatória" });
-
-                if (dto.Preco <= 0)
-                    return BadRequest(new { message = "Preço deve ser maior que zero" });
+                // Validação usando utilitário
+                var (isValid, errorMessage) = ValidationUtils.ValidateProdutoDto(dto);
+                if (!isValid)
+                    return BadRequest(new { message = errorMessage });
 
                 // Verifica se o código já existe
                 if (await _repo.CodigoExiste(dto.Codigo))
-                    return BadRequest(new { message = "Código já existe" });
+                    return BadRequest(new { message = AppConstants.ValidationMessages.CodigoJaExiste });
 
                 var id = Guid.NewGuid();
                 await _repo.InsertProduto(id, dto.Codigo, dto.Descricao, dto.DepartamentoCodigo, dto.Preco, dto.Status);
                 
-                return CreatedAtAction(nameof(GetById), new { id }, new { id, message = "Produto criado com sucesso" });
+                return CreatedAtAction(nameof(GetById), new { id }, new { id, message = AppConstants.SuccessMessages.ProdutoCriado });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+                return HandleInternalError(ex);
             }
         }
 
-        /// <summary>
-        /// Atualiza um produto existente
-        /// </summary>
+        // Atualiza um produto existente
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] ProdutoDto dto)
         {
@@ -96,27 +85,23 @@ namespace EcommerceApi.Controllers
                 // Verifica se o produto existe
                 var produtoExistente = await _repo.GetProdutoById(id);
                 if (produtoExistente == null)
-                    return NotFound(new { message = "Produto não encontrado" });
+                    return NotFound(new { message = AppConstants.ValidationMessages.ProdutoNaoEncontrado });
 
-                // Validações
-                if (string.IsNullOrWhiteSpace(dto.Descricao))
-                    return BadRequest(new { message = "Descrição é obrigatória" });
-
-                if (dto.Preco <= 0)
-                    return BadRequest(new { message = "Preço deve ser maior que zero" });
+                // Validação usando utilitário
+                var (isValid, errorMessage) = ValidationUtils.ValidateProdutoDto(dto);
+                if (!isValid)
+                    return BadRequest(new { message = errorMessage });
 
                 await _repo.UpdateProduto(id, dto.Descricao, dto.DepartamentoCodigo, dto.Preco, dto.Status);
-                return Ok(new { message = "Produto atualizado com sucesso" });
+                return Ok(new { message = AppConstants.SuccessMessages.ProdutoAtualizado });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+                return HandleInternalError(ex);
             }
         }
 
-        /// <summary>
-        /// Exclui logicamente um produto
-        /// </summary>
+        // Exclui logicamente um produto
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -125,15 +110,21 @@ namespace EcommerceApi.Controllers
                 // Verifica se o produto existe
                 var produtoExistente = await _repo.GetProdutoById(id);
                 if (produtoExistente == null)
-                    return NotFound(new { message = "Produto não encontrado" });
+                    return NotFound(new { message = AppConstants.ValidationMessages.ProdutoNaoEncontrado });
 
                 await _repo.DeleteProduto(id);
-                return Ok(new { message = "Produto excluído com sucesso" });
+                return Ok(new { message = AppConstants.SuccessMessages.ProdutoExcluido });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+                return HandleInternalError(ex);
             }
+        }
+
+        // Método privado para tratar erros internos
+        private IActionResult HandleInternalError(Exception ex)
+        {
+            return StatusCode(500, new { message = AppConstants.ErrorMessages.ErroInterno, error = ex.Message });
         }
     }
 }

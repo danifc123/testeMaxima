@@ -1,6 +1,7 @@
 using Npgsql;
 using Dapper;
-using EcommerceApi.Dtos;
+using EcommerceApi.DTOs;
+using EcommerceApi.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,7 +19,13 @@ namespace EcommerceApi.Repositories
         public async Task<IEnumerable<ProdutoResponseDto>> GetProdutos()
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            var sql = @"
+            var sql = GetProdutosQuery();
+            return await connection.QueryAsync<ProdutoResponseDto>(sql);
+        }
+
+        private string GetProdutosQuery()
+        {
+            return @"
                 SELECT 
                     p.id,
                     p.codigo,
@@ -37,14 +44,18 @@ namespace EcommerceApi.Repositories
                 FROM produto p 
                 WHERE p.excluido = false
                 ORDER BY p.data_criacao DESC";
-            
-            return await connection.QueryAsync<ProdutoResponseDto>(sql);
         }
 
         public async Task<ProdutoResponseDto?> GetProdutoById(Guid id)
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            var sql = @"
+            var sql = GetProdutoByIdQuery();
+            return await connection.QueryFirstOrDefaultAsync<ProdutoResponseDto>(sql, new { id });
+        }
+
+        private string GetProdutoByIdQuery()
+        {
+            return @"
                 SELECT 
                     p.id,
                     p.codigo,
@@ -62,8 +73,6 @@ namespace EcommerceApi.Repositories
                     p.data_criacao as DataCriacao
                 FROM produto p 
                 WHERE p.id = @id AND p.excluido = false";
-            
-            return await connection.QueryFirstOrDefaultAsync<ProdutoResponseDto>(sql, new { id });
         }
 
         public async Task<bool> CodigoExiste(string codigo, Guid? idExcluir = null)

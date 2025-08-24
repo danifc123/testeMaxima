@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using EcommerceApi.Dtos;
+using EcommerceApi.DTOs;
+using EcommerceApi.Constants;
 
 namespace EcommerceApi.Controllers
 {
@@ -10,15 +11,20 @@ namespace EcommerceApi.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var departamentos = new List<DepartamentoDto>
-            {
-                new DepartamentoDto { Codigo = "010", Descricao = "BEBIDAS" },
-                new DepartamentoDto { Codigo = "020", Descricao = "CONGELADOS" },
-                new DepartamentoDto { Codigo = "030", Descricao = "LATICINIOS" },
-                new DepartamentoDto { Codigo = "040", Descricao = "VEGETAIS" }
-            };
-
+            var departamentos = GetDepartamentosList();
             return Ok(departamentos);
+        }
+
+        // Método privado para obter lista de departamentos
+        private List<DepartamentoDto> GetDepartamentosList()
+        {
+            return new List<DepartamentoDto>
+            {
+                new DepartamentoDto { Codigo = AppConstants.Departamentos.Bebidas, Descricao = "BEBIDAS" },
+                new DepartamentoDto { Codigo = AppConstants.Departamentos.Congelados, Descricao = "CONGELADOS" },
+                new DepartamentoDto { Codigo = AppConstants.Departamentos.Laticinios, Descricao = "LATICINIOS" },
+                new DepartamentoDto { Codigo = AppConstants.Departamentos.Vegetais, Descricao = "VEGETAIS" }
+            };
         }
     }
 }
