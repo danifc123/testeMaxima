@@ -9,6 +9,13 @@ namespace EcommerceApi.Constants
             public const string PrecoMinimo = "O preço deve ser maior que zero";
             public const string CodigoJaExiste = "Código já existe";
             public const string ProdutoNaoEncontrado = "Produto não encontrado";
+            public const string NomeObrigatorio = "Nome é obrigatório";
+            public const string EmailObrigatorio = "Email é obrigatório";
+            public const string EmailInvalido = "Email inválido";
+            public const string SenhaObrigatoria = "Senha é obrigatória";
+            public const string SenhaMinima = "Senha deve ter pelo menos 6 caracteres";
+            public const string EmailJaExiste = "Email já cadastrado";
+            public const string CredenciaisInvalidas = "Email ou senha inválidos";
         }
 
         // Mensagens de sucesso
@@ -17,6 +24,8 @@ namespace EcommerceApi.Constants
             public const string ProdutoCriado = "Produto criado com sucesso";
             public const string ProdutoAtualizado = "Produto atualizado com sucesso";
             public const string ProdutoExcluido = "Produto excluído com sucesso";
+            public const string UsuarioCriado = "Usuário criado com sucesso";
+            public const string LoginRealizado = "Login realizado com sucesso";
         }
 
         // Mensagens de erro
@@ -35,6 +44,9 @@ namespace EcommerceApi.Constants
             public const int CodigoMaxLength = 50;
             public const int DescricaoMaxLength = 255;
             public const decimal PrecoMinimo = 0.01m;
+            public const int MaxLengthNome = 100;
+            public const int MaxLengthEmail = 100;
+            public const int MinLengthSenha = 6;
         }
 
         // Departamentos
@@ -44,6 +56,14 @@ namespace EcommerceApi.Constants
             public const string Congelados = "020";
             public const string Laticinios = "030";
             public const string Vegetais = "040";
+        }
+
+        public static class Auth
+        {
+            public const string JwtSecret = "sua_chave_secreta_muito_segura_aqui_2024";
+            public const string JwtIssuer = "EcommerceApi";
+            public const string JwtAudience = "EcommerceFrontend";
+            public const int TokenExpirationHours = 24;
         }
     }
 } 

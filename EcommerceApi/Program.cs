@@ -1,3 +1,5 @@
+using EcommerceApi.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Adiciona os controllers
@@ -15,6 +17,13 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+// Configuração da conexão com o banco
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Registra os repositórios
+builder.Services.AddScoped<ProdutoRepository>(provider => new ProdutoRepository(connectionString!));
+builder.Services.AddScoped<UsuarioRepository>(provider => new UsuarioRepository(connectionString!));
 
 var app = builder.Build();
 

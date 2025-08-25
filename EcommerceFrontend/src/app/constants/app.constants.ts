@@ -11,7 +11,9 @@ export const APP_CONSTANTS = {
   ROUTES: {
     PRODUTOS: '/produtos',
     PRODUTO_NOVO: '/produtos/novo',
-    PRODUTO_EDITAR: '/produtos/editar'
+    PRODUTO_EDITAR: '/produtos/editar',
+    LOGIN: '/login',
+    REGISTER: '/register'
   },
 
   // Departamentos
@@ -26,7 +28,8 @@ export const APP_CONSTANTS = {
   VALIDATION: {
     CODIGO_MAX_LENGTH: 50,
     DESCRICAO_MAX_LENGTH: 255,
-    PRECO_MIN: 0.01
+    PRECO_MIN: 0.01,
+    MIN_LENGTH_SENHA: 6
   },
 
   // Mensagens
@@ -45,6 +48,7 @@ export const APP_CONSTANTS = {
       CAMPO_OBRIGATORIO: 'Este campo é obrigatório',
       PRECO_MINIMO: 'Valor deve ser maior que zero',
       CODIGO_EXISTE: 'Código já existe'
-    }
+    },
+    ERRO_LOGIN: 'Erro ao realizar login'
   }
 } as const;
