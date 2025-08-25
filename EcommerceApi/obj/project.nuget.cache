@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "kJLHpjz5r80=",
+  "dgSpecHash": "S47g3r2x33o=",
   "success": true,
   "projectFilePath": "D:\\ESTUDOS\\PROJETOS\\testeMaxima\\EcommerceApi\\EcommerceApi.csproj",
   "expectedPackageFiles": [
@@ -21,15 +21,5 @@
     "C:\\Users\\danie\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.4.0\\swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512",
     "C:\\Users\\danie\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.4.0\\system.identitymodel.tokens.jwt.7.4.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "message": "Ocorreu um erro ao obter os dados de vulnerabilidade do pacote: Não é possível carregar o índice de serviço para a origem https://pkgs.dev.azure.com/virtuetec/Library/_packaging/Library/nuget/v3/index.json.",
-      "projectPath": "D:\\ESTUDOS\\PROJETOS\\testeMaxima\\EcommerceApi\\EcommerceApi.csproj",
-      "warningLevel": 1,
-      "filePath": "D:\\ESTUDOS\\PROJETOS\\testeMaxima\\EcommerceApi\\EcommerceApi.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EcommerceApi.Repositories
 {
-    public class UsuarioRepository
+    public class UsuarioRepository : IUsuarioRepository
     {
         private readonly string _connectionString;
 
