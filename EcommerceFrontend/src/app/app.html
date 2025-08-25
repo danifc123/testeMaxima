@@ -1,4 +1,5 @@
-<mat-sidenav-container class="sidenav-container">
+<!-- Layout principal apenas para usuários logados -->
+<mat-sidenav-container class="sidenav-container" *ngIf="isLoggedIn">
   <mat-sidenav #drawer class="sidenav" fixedInViewport
       [attr.role]="'navigation'"
       [mode]="'over'"
@@ -17,9 +18,21 @@
         <mat-icon>menu</mat-icon>
       </button>
       <span class="toolbar-title">{{ title }}</span>
+      <span class="spacer"></span>
+      <span class="user-info" *ngIf="currentUser">
+        Olá, {{ currentUser.nome }}
+      </span>
+      <button mat-icon-button (click)="logout()" matTooltip="Sair">
+        <mat-icon>logout</mat-icon>
+      </button>
     </mat-toolbar>
-  <div class="content">
+    <div class="content">
       <router-outlet></router-outlet>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<!-- Layout simples para páginas de autenticação -->
+<div *ngIf="!isLoggedIn">
+  <router-outlet></router-outlet>
+</div>

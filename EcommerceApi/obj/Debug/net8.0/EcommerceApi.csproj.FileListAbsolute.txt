@@ -77,3 +77,8 @@ D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\obj\Debug\net8.0\refint\EcommerceAp
 D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\obj\Debug\net8.0\EcommerceApi.pdb
 D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\obj\Debug\net8.0\EcommerceApi.genruntimeconfig.cache
 D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\obj\Debug\net8.0\ref\EcommerceApi.dll
+D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+D:\ESTUDOS\PROJETOS\testeMaxima\EcommerceApi\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll

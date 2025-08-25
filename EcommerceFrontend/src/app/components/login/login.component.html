@@ -1,0 +1,43 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Login</h2>
+      <p>Entre com suas credenciais</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" placeholder="seu@email.com">
+        <mat-error *ngIf="isFieldInvalid('email')">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput formControlName="senha" type="password" placeholder="Sua senha">
+        <mat-error *ngIf="isFieldInvalid('senha')">
+          {{ getErrorMessage('senha') }}
+        </mat-error>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        class="login-button"
+        [disabled]="isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+        <span *ngIf="!isLoading">Entrar</span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>Não tem uma conta?</p>
+      <button mat-button color="accent" (click)="goToRegister()">
+        Criar conta
+      </button>
+    </div>
+  </div>
+</div>
