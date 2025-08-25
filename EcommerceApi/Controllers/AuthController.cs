@@ -10,9 +10,9 @@ namespace EcommerceApi.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UsuarioRepository _repo;
+        private readonly IUsuarioRepository _repo;
 
-        public AuthController(UsuarioRepository repo)
+        public AuthController(IUsuarioRepository repo)
         {
             _repo = repo;
         }

@@ -22,8 +22,8 @@ builder.Services.AddCors(options =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Registra os repositórios
-builder.Services.AddScoped<ProdutoRepository>(provider => new ProdutoRepository(connectionString!));
-builder.Services.AddScoped<UsuarioRepository>(provider => new UsuarioRepository(connectionString!));
+builder.Services.AddScoped<IProdutoRepository>(provider => new ProdutoRepository(connectionString!));
+builder.Services.AddScoped<IUsuarioRepository>(provider => new UsuarioRepository(connectionString!));
 
 var app = builder.Build();
 

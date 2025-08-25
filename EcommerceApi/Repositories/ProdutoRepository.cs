@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EcommerceApi.Repositories
 {
-    public class ProdutoRepository
+    public class ProdutoRepository : IProdutoRepository
     {
         private readonly string _connectionString;
 

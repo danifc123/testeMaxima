@@ -15,4 +15,11 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="EcommerceApi.Tests\**" />
+    <Content Remove="EcommerceApi.Tests\**" />
+    <EmbeddedResource Remove="EcommerceApi.Tests\**" />
+    <None Remove="EcommerceApi.Tests\**" />
+  </ItemGroup>
+
 </Project>

@@ -10,11 +10,11 @@ namespace EcommerceApi.Controllers
     [Route("api/[controller]")]
     public class ProdutoController : ControllerBase
     {
-        private readonly ProdutoRepository _repo;
+        private readonly IProdutoRepository _repo;
 
-        public ProdutoController(IConfiguration config)
+        public ProdutoController(IProdutoRepository repo)
         {
-            _repo = new ProdutoRepository(config.GetConnectionString("DefaultConnection")!);
+            _repo = repo;
         }
 
         // Lista todos os produtos ativos
